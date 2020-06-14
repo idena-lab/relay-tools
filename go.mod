@@ -7,4 +7,5 @@ require (
 	github.com/idena-network/idena-go v0.21.0
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/urfave/cli v1.22.4
+	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
 )

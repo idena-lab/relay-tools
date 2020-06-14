@@ -2,6 +2,7 @@ package contract
 
 import (
 	"bytes"
+	crand "crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -16,7 +17,7 @@ import (
 func NewIdentity(sk *big.Int) *identity {
 	priKey, _ := bls.NewPriKey(new(big.Int).Set(sk))
 	addr := common.Address{}
-	rand.Read(addr[:])
+	crand.Read(addr[:])
 	return &identity{
 		addr: addr,
 		pri:  priKey,
@@ -199,6 +200,7 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 	if !enoughSigner {
 		signCount = rand.Intn(m.quorum()-1) + 1
 	}
+	fmt.Printf("Update: valid=%v height=%v signers=%v -%v +%v identities\n", valid, height, signCount, rmCount, addCount)
 
 	origin := m.clone()
 	m.height = height
@@ -217,7 +219,7 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 	}
 
 	comment := fmt.Sprintf(
-		"height(%d): %d identities -%d +%d by %d signers(%.2f%%)",
+		"Update @%d: origin %d identities, change -%d +%d, signed by %d signers(%.2f%%)",
 		height, len(origin.ids), rmCount, addCount, signCount, float64(signCount)*100/float64(origin.population()),
 	)
 	u := &idenaUpdateState{
@@ -241,28 +243,30 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 		m.reset(origin)
 	}
 	u.Checks = m.getCheckState(isValidUpdate)
-	fmt.Printf("Active identities: %v\n", len(m.ids))
+	fmt.Printf("Active identities after update: %v\n", len(m.ids))
 	return u
 }
 
 // generate test cases for init() and update() in contract
 func GenTestsForStateChanges(f *os.File) {
-	initHeight := 12345678
+	initHeight := 12340000
 	initPop := 2000
+	initRoot := common.Hash{}
+	crand.Read(initRoot[:])
 	m := &idenaStateManager{
 		height: initHeight,
 		pool:   make(identities, 0, 10000),
 		ids:    make(identities, 0),
-		root:   common.Hash{},
+		root:   initRoot,
 	}
 	m.ids = m.getIdsFromPool(initPop)
-	m.updateRoot(m.ids, []byte{})
-	// println(m.root.String())
+	fmt.Printf("Init: height=%v identities=%v root=%v\n", m.height, m.population(), m.root.Hex())
 
 	data := &idenaTestData{}
 	data.Init = &idenaInitState{
-		Comment:    fmt.Sprintf("epcoch(%d): init with %v identities", m.height, m.population()),
+		Comment:    fmt.Sprintf("Init @%d: submit %v identities with root %v", m.height, m.population(), m.root.Hex()),
 		Height:     initHeight,
+		Root:       m.root,
 		Identities: m.ids.getAddresses(),
 		PubKeys:    m.ids.getPubKeys(),
 		Checks:     m.getCheckState(true),

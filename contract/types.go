@@ -79,8 +79,9 @@ type idenaCheckState struct {
 }
 
 type idenaInitState struct {
-	Comment string `json:"comment"`
-	Height  int    `json:"height"`
+	Comment string      `json:"comment"`
+	Height  int         `json:"height"`
+	Root    common.Hash `json:"root"`
 	// new identities' addresses
 	Identities []common.Address `json:"identities"`
 	// new identities' public keys (G1)
