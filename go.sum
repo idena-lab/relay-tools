@@ -311,6 +311,8 @@ github.com/huin/goupnp v1.0.0/go.mod h1:n9v9KO1tAxYH82qOn+UTIFQDmx5n1Zxd/ClZDMX7
 github.com/huin/goutil v0.0.0-20170803182201-1ca381bf3150/go.mod h1:PpLOETDnJ0o3iZrZfqZzyLl6l7F3c6L1oWn7OICBi6o=
 github.com/idena-lab/bls-256-go v0.1.0 h1:eW9rYyL3O10p+qNa2EQj4UKiQqm2jmSkjQ6L779PNAc=
 github.com/idena-lab/bls-256-go v0.1.0/go.mod h1:LXC0avmvbFcn1OuOiUevm/TDWDmRRUi4z5klwcWPD6w=
+github.com/idena-lab/bls-256-go v0.1.1 h1:lJM7LrXVNbDVSoHaSV+IBxmFKeFK8vGYKPe30ebSD54=
+github.com/idena-lab/bls-256-go v0.1.1/go.mod h1:LXC0avmvbFcn1OuOiUevm/TDWDmRRUi4z5klwcWPD6w=
 github.com/idena-network/idena-go v0.21.0 h1:FYRQpo23Cus0MY6sJ0uwd2pjctxgXfn9Qy+SOWKMPh4=
 github.com/idena-network/idena-go v0.21.0/go.mod h1:oSIJbXDdYKcp1RXB1nxJS3AaHLiKnt8Hwsgupksmook=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
@@ -1336,6 +1338,8 @@ golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20200523222454-059865788121/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34 h1:u6CI7A++8r4SItZHYe2cWeAEndN4p1p+3Oum/Ft2EzM=
 golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20200610111108-226ff32320da h1:bGb80FudwxpeucJUjPYJXuJ8Hk91vNtfvrymzwiei38=
+golang.org/x/sys v0.0.0-20200610111108-226ff32320da/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

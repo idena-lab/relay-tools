@@ -8,33 +8,22 @@ import (
 	"fmt"
 	"github.com/idena-lab/bls-256-go"
 	"github.com/idena-network/idena-go/common"
+	"github.com/idena-network/idena-go/crypto"
 	"math/big"
 	"math/rand"
 	"os"
 	"sort"
 )
 
-func NewIdentity(sk *big.Int) *identity {
-	priKey, _ := bls.NewPriKey(new(big.Int).Set(sk))
-	addr := common.Address{}
-	crand.Read(addr[:])
-	return &identity{
-		addr: addr,
-		pri:  priKey,
-		pub1: priKey.GetPub1(),
-		pub2: priKey.GetPub2(),
-	}
-}
-
 type idenaStateManager struct {
+	height int
+	root   common.Hash
 	ids    identities
 	pool   identities
-	root   common.Hash
-	height int
 }
 
 // make generated data more similar
-var nextPrivateKey = bls.BigFromBase10("666666666666666666666666666666666666666666666666666666666666")
+var nextPrivateKeySeed = big.NewInt(4444)
 
 // get n identities from pool
 // the removed identities in the pool may be returned
@@ -42,8 +31,13 @@ var nextPrivateKey = bls.BigFromBase10("6666666666666666666666666666666666666666
 func (m *idenaStateManager) getIdsFromPool(n int) identities {
 	if len(m.pool) < n {
 		for i := 0; i < n; i++ {
-			m.pool = append(m.pool, NewIdentity(nextPrivateKey))
-			nextPrivateKey = nextPrivateKey.Add(nextPrivateKey, big.NewInt(1))
+			seed := bytes.NewReader(crypto.Keccak512(nextPrivateKeySeed.Bytes()))
+			ecdPri, err := crypto.GenerateKeyFromSeed(seed)
+			if err != nil {
+				panic(err)
+			}
+			m.pool = append(m.pool, NewIdentity(ecdPri))
+			nextPrivateKeySeed.Add(nextPrivateKeySeed, big.NewInt(1))
 		}
 	}
 	// randomly select ids from the pool
@@ -176,7 +170,7 @@ func (m *idenaStateManager) aggSign(signers identities) (*bls.Signature, *bls.Pu
 	sigs := make([]*bls.Signature, len(signers))
 	pub2s := make([]*bls.PubKey2, len(signers))
 	for i, id := range signers {
-		sigs[i] = id.pri.Sign(m.root[:])
+		sigs[i] = id.blsPri.Sign(m.root[:])
 		pub2s[i] = id.pub2
 	}
 	return bls.AggregateSignatures(sigs), bls.AggregatePubKeys2(pub2s)
@@ -226,7 +220,8 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 		Comment:       comment,
 		Height:        height,
 		NewIdentities: newIds.getAddresses(),
-		NewPubKeys:    newIds.getPubKeys(),
+		NewEcdPriKeys: newIds.getEcdPriKeys(),
+		NewBlsPub1s:   newIds.getPub1s(),
 		RemoveFlags:   rmFlags,
 		RemoveCount:   rmCount,
 		SignFlags:     signFlags,
@@ -268,7 +263,8 @@ func GenTestsForStateChanges(f *os.File) {
 		Height:     initHeight,
 		Root:       m.root,
 		Identities: m.ids.getAddresses(),
-		PubKeys:    m.ids.getPubKeys(),
+		EcdPriKeys: m.ids.getEcdPriKeys(),
+		BlsPub1s:   m.ids.getPub1s(),
 		Checks:     m.getCheckState(true),
 	}
 	data.Updates = make([]*idenaUpdateState, 0)
@@ -278,6 +274,10 @@ func GenTestsForStateChanges(f *os.File) {
 		m.doUpdate(true, m.height+1, true, 0, 0),
 		m.doUpdate(true, m.height+1, true, 100, 0),
 		m.doUpdate(true, m.height+2, true, 0, 100),
+		m.doUpdate(true, m.height+1, true, 55, 88),
+		m.doUpdate(true, m.height+1, true, 88, 55),
+		m.doUpdate(true, m.height+1, true, 7, 123),
+		m.doUpdate(true, m.height+1, true, 222, 5),
 		m.doUpdate(true, m.height+1, true, 125, 173),
 		m.doUpdate(true, m.height+2, true, 186, 145),
 		m.doUpdate(true, m.height+4, true, 210, 180),
