@@ -213,9 +213,14 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 	}
 
 	comment := fmt.Sprintf(
-		"Update @%d: origin %d identities, change -%d +%d, signed by %d signers(%.2f%%)",
+		"update @%d: origin %d identities, change -%d +%d, signed by %d (%.2f%%) signers",
 		height, len(origin.ids), rmCount, addCount, signCount, float64(signCount)*100/float64(origin.population()),
 	)
+	if valid {
+		comment = "Valid " + comment
+	} else {
+		comment = "Invalid " + comment
+	}
 	u := &idenaUpdateState{
 		Comment:       comment,
 		Height:        height,
