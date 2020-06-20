@@ -213,7 +213,7 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 	}
 
 	comment := fmt.Sprintf(
-		"update @%d: origin %d identities, change -%d +%d, signed by %d (%.2f%%) signers",
+		"update @%d: origin %d identities, kill=%d, add=%d, signed by %d (%.2f%%) signers",
 		height, len(origin.ids), rmCount, addCount, signCount, float64(signCount)*100/float64(origin.population()),
 	)
 	if valid {
@@ -249,8 +249,8 @@ func (m *idenaStateManager) doUpdate(valid bool, height int, enoughSigner bool, 
 
 // generate test cases for init() and update() in contract
 func GenTestsForStateChanges(f *os.File) {
-	initHeight := 12340000
-	initPop := 2000
+	initHeight := 2560000
+	initPop := 2468
 	initRoot := common.Hash{}
 	crand.Read(initRoot[:])
 	m := &idenaStateManager{
@@ -276,23 +276,21 @@ func GenTestsForStateChanges(f *os.File) {
 
 	// case1
 	data.Updates = append(data.Updates,
+		m.doUpdate(true, m.height+1, true, 20, 120),
+		m.doUpdate(true, m.height+1, true, 1, 0),
+		m.doUpdate(true, m.height+1, true, 15, 0),
+		m.doUpdate(true, m.height+1, true, 100, 400),
 		m.doUpdate(true, m.height+1, true, 0, 0),
-		m.doUpdate(true, m.height+1, true, 100, 0),
-		m.doUpdate(true, m.height+2, true, 0, 100),
-		m.doUpdate(true, m.height+1, true, 55, 88),
-		m.doUpdate(true, m.height+1, true, 88, 55),
-		m.doUpdate(true, m.height+1, true, 7, 123),
-		m.doUpdate(true, m.height+1, true, 222, 5),
-		m.doUpdate(true, m.height+1, true, 125, 173),
-		m.doUpdate(true, m.height+2, true, 186, 145),
-		m.doUpdate(true, m.height+4, true, 210, 180),
-		m.doUpdate(true, m.height+1, true, 180, 200),
-		// invalid cases
-		m.doUpdate(false, m.height, true, 100, 120),
-		m.doUpdate(false, m.height-1, true, 100, 120),
-		m.doUpdate(false, m.height+1, false, 100, 120),
-		// valid again
-		m.doUpdate(true, m.height+1, true, 80, 110),
+		m.doUpdate(true, m.height+11, true, 4, 0),
+		m.doUpdate(true, m.height+44, true, 56, 0),
+		m.doUpdate(true, m.height+1024, true, 123, 0),
+		m.doUpdate(true, m.height+1, true, 0, 2),
+		m.doUpdate(true, m.height+1, true, 0, 88),
+		m.doUpdate(true, m.height+1, true, 0, 222),
+		m.doUpdate(true, m.height+1, true, 3, 7),
+		m.doUpdate(true, m.height+1, true, 22, 66),
+		m.doUpdate(true, m.height+1, true, 88, 35),
+		m.doUpdate(true, m.height+1, true, 333, 888),
 	)
 
 	// case2
